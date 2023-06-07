@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{master.html}">
+<head>
+    <meta charset="utf-8">
+    <title>Administrar Películas</title>
+    <style>
+        body {
+            background-image: url('https://img.freepik.com/foto-gratis/collage-fondo-pelicula_23-2149876003.jpg?w=900&t=st=1685798460~exp=1685799060~hmac=9980f7e2e80645af862ad0c0970b47b1223b5a0a19b59e49a13abb1d35002b1c');
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        .container {
+            background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 50%, rgba(255, 255, 255, 0) 100%);
+            padding: 20px;
+        }
+
+        .container h2 {
+            text-shadow: 2px 2px 2px #000;
+            font-size: 4em;
+            color: #fff;
+        }
+
+        .btn-lg {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            background-color: transparent;
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            border: 2px solid #fff;
+        }
+    </style>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="container my-5">
+            <h2>Peliculas</h2>
+            <div class="text-end">
+                <a href="/admin/peliculas/nuevo" class="btn btn-primary btn-lg mb-3">
+                    Agregar Nueva Película
+                </a>
+            </div>
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Pelicula</th>
+                        <th>F.Estreno</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="pelicula : ${peliculas}" th:object="${pelicula}">
+                        <td style="width: 150px;"><a th:href="@{/assets/{filename}(filename=*{rutaPortada})}" data-fancybox>
+                                <img th:src="@{/assets/{filename}(filename=*{rutaPortada})}" alt="" class="img-thumbnail w-100">
+                            </a></td>
+                        <td>
+                            <div th:text="*{titulo}" class="fs-5 fw-bold"></div>
+                            <p th:text="*{sinopsis}"></p>
+                            <div>
+                                <span class="badge rounded-pill bg-light text-dark me-1" th:each="genero : *{generos}" th:text="${genero.titulo}"></span>
+                            </div>
+                        </td>
+                        <td th:text="*{#temporals.format(fechaEstreno,'dd/MM/yyyy')}"></td>
+                        <td class="text-end">
+                            <a th:href="@{/admin/peliculas/{id}/editar(id=*{id})}">Editar</a>
+                            <a href="javascript:void(0)" class="text-danger ms-3" th:onclick="'eliminarPelicula(' + *{id} +')'">Eliminar</a>
+                            <form th:id="'eliminarPeliculaForm' + *{id}" th:action="@{/admin/peliculas/{id}/eliminar(id=*{id})}" method="post" class="d-none"></form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="row mt-5" th:with="page=${peliculas}">
+                <div class="col-sm-6">
+                    <div sd:pagination-sumary></div>
+                    <div class="col-sm-6">
+                        <nav>
+                            <ul class="pagination" sd:pagination="full"></ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div layout:fragment="scripts">
+        <script>
+            function eliminarPelicula(id) {
+                if (!confirm('¿Estás seguro de eliminar esta película?')) {
+                    return;
+                }
+                $('#eliminarPeliculaForm' + id).submit();
+            }
+        </script>
+    </div>
+</body>
+</html>
